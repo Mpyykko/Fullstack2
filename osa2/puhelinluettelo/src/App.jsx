@@ -1,120 +1,150 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import personService from './services/personService'
 
-
-const Filter=({filter, handleFilterChange}) => {
-  return (
-    <div>
-      Filter shown with <input value={filter} onChange={handleFilterChange} />
-
-    </div>
-  )
-}
+import Filter from './components/Filter'
+import PersonForm from './components/PersonForm'
+import Persons from './components/Persons'
+import Notification from './components/Notification'
 
 
 
-const PersonForm=({newName, handleNameChange, newNumber, handleNumberChange, addPerson}) => {
-  return (
-    <form onSubmit={addPerson}>
-      <div>
-        name: <input value={newName} onChange={handleNameChange} />
-      </div>
-      <div>
-        number: <input value={newNumber} onChange={handleNumberChange} />
-      </div>
-      <div>
-        <button type="submit">add</button>
-      </div>
-    </form>
-  )
-}
 
-
-const Persons=({persons}) => {
-  return (
-    <ul>
-      { persons.map((person, index) => (
-        <Person key={index} person={person} />
-      ))
-      }
-    </ul>
-  )
-}
-
-const Person=({person}) => {
-  return (
-    <li>{person.name} {person.number}</li>
-  )
-
-}
-
-
-
-const App=() => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-123456' },
-    { name: 'Ada Lovelace', number: '39-44-5323523' },
-    { name: 'Dan Abramov', number: '12-43-234345' },
-    { name: 'Mary Poppendieck', number: '39-23-6423122' }
-  ])
-
+const App = () => {
+  const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
 
+  const [notification, setNotification] = useState({ message: null, type: '' })
 
-  // käsittele nimi
+  const showMessage = (msg, type) => {
+    setNotification({ message: msg, type: type });
+
+    setTimeout(() => {
+      setNotification({ message: null, type: '' });
+    }, 3000)
+  }
+
+  useEffect(() => {
+    personService
+      .getAll()
+      .then(initialPersons => {
+        setPersons(initialPersons)
+      })
+      .catch(error => {
+        console.log('Error',error)
+      })
+  }, [])
+
   const handleNameChange = (event) => {
-
     setNewName(event.target.value)
   }
 
-  // käsittele numero
   const handleNumberChange = (event) => {
     setNewNumber(event.target.value)
   }
 
-  // filtteri
   const handleFilterChange = (event) => {
-    setFilter(event.target.value);
-  };
-
-
-
+    setFilter(event.target.value)
+  }
 
   const addPerson = (event) => {
     event.preventDefault()
 
-  console.log(persons)
-
-    // onko jo olemassa
-    if (persons.some(person => person.name === newName)) {
-      alert(`${newName} on jo luettelossa!`)
-
-      setNewName('')
+    // ei tyhjiä nimiä
+    if (newName.trim() === '') {
+      alert('Name cannot be empty')
+   
       return
     }
-
-    const personObject = {
-      name: newName,
-      number: newNumber
+     // eikä tyhjiä numeroita
+     if (newNumber.trim() === '') {
+      alert('Number cannot be empty')
+   
+      return
     }
+    // numerolle oikea muoto
+    const isNumeric = (str) => {
+      return /^[-\d\s]+$/.test(str)
+    }
+   
+    if ((!isNumeric(newNumber))) {
+      alert('Check the phonenumber')
+      console.log('Error')
+      return
+    }
+    showMessage('Person added successfully!')
 
-    
-    setPersons(persons.concat(personObject))
-    setNewName('')
-    setNewNumber('')
+  
+
+    const existingPerson = persons.find(person => person.name === newName)
+
+    if (existingPerson) {
+      if (window.confirm(`${newName} already exist, replace the old number with new one?`)) {
+        const updatedPerson = { ...existingPerson, number: newNumber }
+
+        personService
+          .update(existingPerson.id, updatedPerson)
+          .then(returnedPerson => {
+            setPersons(persons.map(person => person.id !== existingPerson.id ? person : returnedPerson))
+            setNewName('')
+            setNewNumber('')
+            showMessage('Person updated successfully!', 'success')
+          })
+          .catch(error => {
+            console.log('Error', error)
+            showMessage('Failed to update person', error)
+          })
+      }
+    } else {
+      const personObject = {
+        name: newName,
+        number: newNumber
+      }
+
+      personService
+        .create(personObject)
+        .then(returnedPerson => {
+          setPersons(persons.concat(returnedPerson))
+          setNewName('')
+          setNewNumber('')
+          showMessage('Person added successfully!', 'success')
+        })
+        .catch(error => {
+          console.log('Error', error)
+          showMessage('Failed to add person', 'error')
+        })
+    }
+  }
+
+  const handleDelete = (id) => {
+    if (window.confirm('Confirm delete?')) {
+      personService
+        .remove(id)
+        .then(() => {
+          setPersons(persons.filter(person => person.id !== id))
+          showMessage('Person deleted successfully!', 'success')
+        })
+        .catch(error => {
+          console.log('Error', error)
+          showMessage('Something went wrong', 'error')
+        })
+    }
   }
 
   const filteredPersons = persons.filter(person =>
     person.name.toLowerCase().includes(filter.toLowerCase())
-  );
+  )
+
+ 
 
   return (
-    <div>
+    <div className='phonebook'>
       <h2>Phonebook</h2>
+      < Notification notification={notification} />
       <Filter filter={filter} handleFilterChange={handleFilterChange} />
       <h3>Add new person</h3>
-      <PersonForm
+      < PersonForm
         newName={newName}
         handleNameChange={handleNameChange}
         newNumber={newNumber}
@@ -122,7 +152,9 @@ const App=() => {
         addPerson={addPerson}
       />
       <h3>Numbers</h3>
-      <Persons persons={filteredPersons} />
+     
+      <Persons  persons={filteredPersons} handleDelete={handleDelete} />
+     
     </div>
   )
 }

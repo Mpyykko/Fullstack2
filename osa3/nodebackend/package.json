@@ -1,0 +1,15 @@
+{
+  "name": "nodebackend",
+  "version": "1.0.0",
+  "description": "eka node harjoitus",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "MP",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

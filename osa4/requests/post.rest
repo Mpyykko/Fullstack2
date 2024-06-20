@@ -3,9 +3,9 @@ Content-Type: application/json
 
 {
   "title": "Uusi blogi",
-  "author": "Kirjoittaja1",
+  "author": "Kirjoittaja1111",
   "url": "http://jokusivu.fi",
-  "likes": 1
+  "likes": 11113
 }
 
 

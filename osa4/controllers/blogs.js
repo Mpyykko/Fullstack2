@@ -1,14 +1,18 @@
 const express = require('express')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 const blogsRouter = express.Router()
 
+
+// kaikki
 blogsRouter.get('/', async (request, response) => {
-  const blogs = await Blog.find({})
+  const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 })
   response.json(blogs)
 })
 
+// id:n perusteella
 blogsRouter.get('/:id', async (request, response) => {
-  const blog = await Blog.findById(request.params.id)
+  const blog = await Blog.findById(request.params.id).populate('user', { username: 1, name: 1 })
   if (blog) {
     response.json(blog)
   } else {
@@ -16,6 +20,7 @@ blogsRouter.get('/:id', async (request, response) => {
   }
 })
 
+// luo blogi
 blogsRouter.post('/', async (request, response) => {
   const body = request.body
 
@@ -23,18 +28,24 @@ blogsRouter.post('/', async (request, response) => {
     return response.status(400).json({ error: 'Title or URL missing' })
   }
 
+  const user = await User.findById(body.userId)
+ 
+
   const blog = new Blog({
     title: body.title,
     author: body.author,
     url: body.url,
     likes: body.likes || 0,
+    user: user._id
   })
 
   const savedBlog = await blog.save()
+  user.blogs = user.blogs.concat(savedBlog._id)
+  await user.save()
   response.status(201).json(savedBlog)
 })
 
-
+// poista blogi
 blogsRouter.delete('/:id', async (request, response, next) => {
   try {
     const blog = await Blog.findByIdAndDelete(request.params.id)
@@ -47,9 +58,9 @@ blogsRouter.delete('/:id', async (request, response, next) => {
   }
 })
 
-
+// päivitä
 blogsRouter.put('/:id', async (request, response, next) => {
-  const { likes } = request.body;
+  const { likes } = request.body
 
   try {
     const updatedBlog = await Blog.findByIdAndUpdate(

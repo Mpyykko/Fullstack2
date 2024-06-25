@@ -3,14 +3,17 @@ const Blog = require('../models/blog')
 const User = require('../models/user')
 const blogsRouter = express.Router()
 
-
-// kaikki
+// kaikki blogit
 blogsRouter.get('/', async (request, response) => {
-  const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 })
-  response.json(blogs)
+  try {
+    const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 })
+    response.json(blogs)
+  } catch (error) {
+    response.status(500).json({ error: 'Server error' })
+  }
 })
 
-// id:n perusteella
+// blogi id:n perusteella
 blogsRouter.get('/:id', async (request, response) => {
   const blog = await Blog.findById(request.params.id).populate('user', { username: 1, name: 1 })
   if (blog) {
@@ -20,7 +23,7 @@ blogsRouter.get('/:id', async (request, response) => {
   }
 })
 
-// luo blogi
+// uusi blogi
 blogsRouter.post('/', async (request, response) => {
   const body = request.body
 
@@ -28,8 +31,11 @@ blogsRouter.post('/', async (request, response) => {
     return response.status(400).json({ error: 'Title or URL missing' })
   }
 
+  // etsi id:llä
   const user = await User.findById(body.userId)
- 
+  if (!user) {
+    return response.status(400).json({ error: 'Invalid userId' })
+  }
 
   const blog = new Blog({
     title: body.title,
@@ -45,12 +51,12 @@ blogsRouter.post('/', async (request, response) => {
   response.status(201).json(savedBlog)
 })
 
-// poista blogi
+// Poista blogi
 blogsRouter.delete('/:id', async (request, response, next) => {
   try {
     const blog = await Blog.findByIdAndDelete(request.params.id)
     if (!blog) {
-      return response.status(404).json({ error: 'blog not found' })
+      return response.status(404).json({ error: 'Blog not found' })
     }
     response.status(204).end()
   } catch (error) {
@@ -58,7 +64,7 @@ blogsRouter.delete('/:id', async (request, response, next) => {
   }
 })
 
-// päivitä
+// Päivitä 
 blogsRouter.put('/:id', async (request, response, next) => {
   const { likes } = request.body
 
@@ -72,7 +78,7 @@ blogsRouter.put('/:id', async (request, response, next) => {
     if (updatedBlog) {
       response.json(updatedBlog)
     } else {
-      response.status(404).json({ error: 'blog not found' })
+      response.status(404).json({ error: 'Blog not found' })
     }
   } catch (error) {
     next(error)

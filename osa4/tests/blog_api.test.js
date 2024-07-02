@@ -117,7 +117,7 @@ test('adding a new blog fails with status 401 if token is missing', async () => 
   const response = await api
     .post('/api/blogs')
     .send(newBlog)
-    .set('Authorization', 'Bearer ')
+  
     .expect(401)
 
   console.log(response.body)

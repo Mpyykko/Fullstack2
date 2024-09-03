@@ -1,20 +1,16 @@
 import React, { useState } from 'react'
 import blogService from '../services/blogs'
-
-
 const BlogForm = ({ handleNewBlog }) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
-
   const createBlog = async (event) => {
-    event.preventDefault();
+    event.preventDefault()
     const newBlog = {
       title: title,
       author: author,
       url: url,
     }
-
     try {
       const response = await blogService.create(newBlog)
       handleNewBlog(response)
@@ -23,10 +19,8 @@ const BlogForm = ({ handleNewBlog }) => {
       setUrl('')
     } catch (error) {
       console.error('Failed to create blog:', error)
-   
     }
   }
-
   return (
     <form onSubmit={createBlog}>
       <div>
@@ -57,5 +51,4 @@ const BlogForm = ({ handleNewBlog }) => {
     </form>
   )
 }
-
 export default BlogForm

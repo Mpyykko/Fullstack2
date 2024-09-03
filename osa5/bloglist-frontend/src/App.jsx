@@ -4,18 +4,14 @@ import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import BlogForm from './components/BlogForm'
-
 import LoginForm from './components/LoginForm'
-
 import Togglable from './components/Togglable'
-
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [notification, setNotification] = useState(null)
-
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
     if (loggedUserJSON) {
@@ -24,8 +20,6 @@ const App = () => {
       blogService.setToken(user.token)
     }
   }, [])
-
-
   useEffect(() => {
     if (user) {
       blogService.getAll().then(initialBlogs =>
@@ -33,10 +27,8 @@ const App = () => {
       )
     }
   }, [user])
-
   const handleLogin = async (event) => {
     event.preventDefault()
-
     try {
       const user = await loginService.login({
         username, password,
@@ -58,7 +50,7 @@ const App = () => {
     } catch (exception) {
       console.error('Login failed:', exception)
       setNotification({
-        message: 'Wrong credentials',
+        message: 'Wrong username or password',
         type: 'error'
       })
       setTimeout(() => {
@@ -66,13 +58,11 @@ const App = () => {
       }, 3000)
     }
   }
-
   const handleLogout = () => {
     window.localStorage.removeItem('loggedBlogappUser')
     setUser(null)
     blogService.setToken(null)
   }
-
   const handleNewBlog = (newBlog) => {
     setBlogs([...blogs, newBlog])
     setNotification({
@@ -83,12 +73,18 @@ const App = () => {
       setNotification(null)
     }, 3000)
   }
-
+  const handleLikeUpdate = (updatedBlog) => {
+    setBlogs(blogs.map(blog =>
+      blog.id === updatedBlog.id ? updatedBlog : blog
+    ))
+  }
+  const handleDeleteBlog = (id) => {
+    setBlogs(blogs.filter(blog => blog.id !== id))
+  }
   return (
     <div>
       <h1>Blogs</h1>
       <Notification notification={notification} />
-      
       {!user ? (
         <Togglable buttonLabel="Log in">
           <LoginForm
@@ -107,13 +103,16 @@ const App = () => {
             <BlogForm handleNewBlog={handleNewBlog} />
           </Togglable>
           <h2>Blogs</h2>
-          {blogs.map(blog =>
-            <Blog key={blog.id} blog={blog} />
-          )}
+          {blogs.sort((a, b) => b.likes - a.likes)
+            .map(blog =>
+              <Blog key={blog.id}blog={blog}
+                handleLikeUpdate={handleLikeUpdate}
+                handleDeleteBlog={handleDeleteBlog}
+                user={user}/>
+            )}
         </div>
       )}
     </div>
   )
 }
-
 export default App

@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import BlogForm from './BlogForm'
 
+
 /// toimii
 test('Löytyykö title?', () => {
   const blog = {
@@ -24,3 +25,4 @@ test('Löytyykö Author?', () => {
   render(<BlogForm blog={blog} />)
   expect(screen.getByText('Author:')).toBeInTheDocument()
 })
+

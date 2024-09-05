@@ -22,6 +22,7 @@ const Blog = ({ blog, handleLikeUpdate, handleDeleteBlog, user }) => {
     setLikes(response.likes)
     handleLikeUpdate(response)
   }
+  
   const deleteBlog = async () => {
     const confirmDelete = window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)
     if (confirmDelete) {
@@ -37,8 +38,8 @@ const Blog = ({ blog, handleLikeUpdate, handleDeleteBlog, user }) => {
   return (
     <div style={blogStyle}>
         Blogs name: {blog.title}
-      <button onClick={toggleView}>
-        {expanded ? 'Hide' : 'Show more'}
+        <button data-testid="show-more" onClick={toggleView}>
+          {expanded ? 'Hide' : 'Show more'}
       </button>
       {expanded && (
         <div>

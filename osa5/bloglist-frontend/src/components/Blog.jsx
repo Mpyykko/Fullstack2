@@ -36,7 +36,7 @@ const Blog = ({ blog, handleLikeUpdate, handleDeleteBlog, user }) => {
   }
   const isAuthor = user && blog.user.username === user.username
   return (
-    <div style={blogStyle}>
+    <div data-testid="blogit" style={blogStyle}>
         Blogs name: {blog.title}
         <button data-testid="show-more" onClick={toggleView}>
           {expanded ? 'Hide' : 'Show more'}
@@ -46,11 +46,11 @@ const Blog = ({ blog, handleLikeUpdate, handleDeleteBlog, user }) => {
           <p>Writer: {blog.author}</p>
           <p>Url: {blog.url}</p>
           <p>Likes: {blog.likes}
-            <button onClick={addLike}>
+            <button data-testid="like-button" onClick={addLike}>
             Like
             </button>
             {isAuthor && (
-              <button onClick={deleteBlog}>Delete</button>
+              <button data-testid="delete-button" onClick={deleteBlog}>Delete</button>
             )}
           </p>
         </div>

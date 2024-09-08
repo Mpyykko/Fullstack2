@@ -1,0 +1,16 @@
+{
+  "name": "play",
+  "version": "1.0.0",
+  "description": "playwright",
+  "main": "index.js",
+  "scripts": {
+    "test": "cross-env NODE_ENV=test playwright test",
+    "test:report": "playwright show-report"
+  },
+  "author": "MP",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.46.1",
+    "@types/node": "^22.5.4"
+  }
+}

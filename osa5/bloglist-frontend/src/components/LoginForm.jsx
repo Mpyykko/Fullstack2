@@ -16,6 +16,7 @@ const LoginForm = ({
             placeholder="username"
             value={username}
             onChange={handleUsernameChange}
+            data-testid="username"
           />
         </div>
         <div>
@@ -24,6 +25,7 @@ const LoginForm = ({
             placeholder="password"
             value={password}
             onChange={handlePasswordChange}
+            data-testid="password"
           />
         </div>
         <button type="submit">login</button>

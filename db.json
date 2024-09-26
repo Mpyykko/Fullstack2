@@ -1,0 +1,37 @@
+{
+  "posts": [
+    {
+      "id": 1,
+      "title": "json-server",
+      "author": "typicode"
+    }
+  ],
+  "comments": [
+    {
+      "id": 1,
+      "body": "some comment",
+      "postId": 1
+    }
+  ],
+  "profile": {
+    "name": "typicode"
+  },
+  "anecdotes": [
+    {
+      "id": "47145",
+      "content": "If it hurts, do it more often",
+      "votes": 0
+    },
+    {
+      "id": "47146",
+      "content": "Adding manpower to a late software project makes it later!",
+      "votes": 0
+    }
+    ,
+    {
+      "id": "44444",
+      "content": "Tämä  tulee db.jsonista?",
+      "votes": 0
+    }
+  ]
+}

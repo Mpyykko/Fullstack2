@@ -7,6 +7,8 @@ useNavigate,useParams
 
 } from 'react-router-dom'
 
+import useField from './hooks/index.js'
+
 const Menu = ({user}) => {
   const padding = {
     paddingRight: 5
@@ -75,29 +77,36 @@ const Footer = () => (
 )
 
 const CreateNew = ({ addNew, setNotification }) => {
-  const [content, setContent] = useState('')
-  const [author, setAuthor] = useState('')
-  const [info, setInfo] = useState('')
+  const content = useField('text')
+  const author = useField('text')
+  const info = useField('text')
   const navigate = useNavigate()
  
 
   const handleSubmit = (e) => {
     e.preventDefault()
     addNew({
-      content,
-      author,
-      info,
+      content: content.value,
+      author: author.value,
+      info: info.value,
       votes: 0
     })
     
-    setNotification(`A new anecdote "${content}" created!`)
+    setNotification(`A new anecdote "${content.value}" created!`)
     setTimeout(() => {
       setNotification('')
     }, 5000)
 
     navigate('/')
-
+  
   }
+
+  const handleReset = () => {
+    content.reset()
+    author.reset()
+    info.reset()
+  }
+
 
   return (
     <div>
@@ -105,17 +114,18 @@ const CreateNew = ({ addNew, setNotification }) => {
       <form onSubmit={handleSubmit}>
         <div>
           Content
-          <input name='content' value={content} onChange={(e) => setContent(e.target.value)} />
+          <input {...content.props} />
         </div>
         <div>
           Author
-          <input name='author' value={author} onChange={(e) => setAuthor(e.target.value)} />
+          <input {...author.props} />
         </div>
         <div>
           URL for more info
-          <input name='info' value={info} onChange={(e)=> setInfo(e.target.value)} />
+          <input {...info.props} />
         </div>
-        <button>Create</button>
+        <button type='submit'>Create</button>
+      <button type='button' onClick={handleReset}>Reset</button>
       </form>
     </div>
   )
@@ -197,6 +207,9 @@ const App = () => {
     boxShadow: '0 2px 5px rgba(0, 0, 0, 0.7)',
     textAlign: 'center',
     color: 'white',
+    width: '400px',
+    maxWidth: '500px',
+    margin: '0 auto'
   }
 
 

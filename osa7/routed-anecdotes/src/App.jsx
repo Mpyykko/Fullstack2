@@ -8,22 +8,37 @@ useNavigate,useParams
 } from 'react-router-dom'
 
 import useField from './hooks/index.js'
+import { Table, Form, Button, Alert, Nav,Navbar } from 'react-bootstrap'
 
 const Menu = ({user}) => {
   const padding = {
     paddingRight: 5
   }
   return (
-    <div>
-      <Link to='/' style={padding}>Anecdotes</Link>
-      <Link to='/create'style={padding}>Create new</Link>
-      <Link to='/about' style={padding}>About</Link>
-      {user
-        ? <em>{user} Logged in</em>
-        : <Link to='/login' style={padding}>Login</Link>
-      }
-    </div>
-  )
+    <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
+    <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+    <Navbar.Collapse id="responsive-navbar-nav">
+      <Nav className="mr-auto">
+        <Nav.Link as="span">
+          <Link style={padding} to="/">Anecdotes</Link>
+        </Nav.Link>
+        <Nav.Link as="span">
+          <Link style={padding} to="/create">Create new</Link>
+        </Nav.Link>
+        <Nav.Link as="span">
+          <Link style={padding} to="/about">About</Link>
+        </Nav.Link>
+        <Nav.Link as="span">
+          {user ? (
+            <em>{user} Logged in</em>
+          ) : (
+            <Link to="/login" style={padding}>Login</Link>
+          )}
+        </Nav.Link>
+      </Nav>
+    </Navbar.Collapse>
+  </Navbar>
+)
 }
 
 const Anecdote = ({ anecdotes }) => {
@@ -34,23 +49,35 @@ const Anecdote = ({ anecdotes }) => {
   return (
     <div>
       <h2>{anecdote.content} by {anecdote.author}</h2>
-      <p>has {anecdote.votes} votes</p>
-      <p>For more info, see <a href={anecdote.info}>{anecdote.info}</a></p>
+      <p style={{ textAlign: 'center' }}>has {anecdote.votes} votes</p>
+      <p style={{ textAlign: 'center' }}>For more info, see <a href={anecdote.info}>{anecdote.info}</a></p>
     </div>
   )
 }
 
 const AnecdoteList = ({ anecdotes }) => (
   <div>
-    <h2>Anecdotes</h2>
-    <ul>
+  <h2>Anecdotes</h2>
+  <Table striped>
+    <tbody>
       {anecdotes.map(anecdote => (
-        <li key={anecdote.id}>
-          <Link to={`/anecdotes/${anecdote.id}`}>{anecdote.content}</Link>
-        </li>
+        <tr key={anecdote.id}>
+          <td>
+            <Link to={`/anecdotes/${anecdote.id}`}>
+              {anecdote.content}
+            </Link>
+          </td>
+          <td>
+            {anecdote.author}
+          </td>
+          <td>
+            {anecdote.votes}
+          </td>
+        </tr>
       ))}
-    </ul>
-  </div>
+    </tbody>
+  </Table>
+</div>
 )
 
 const About = () => (
@@ -101,6 +128,8 @@ const CreateNew = ({ addNew, setNotification }) => {
   
   }
 
+
+
   const handleReset = () => {
     content.reset()
     author.reset()
@@ -109,24 +138,31 @@ const CreateNew = ({ addNew, setNotification }) => {
 
 
   return (
-    <div>
+    <div className="container">
       <h2>Create a new anecdote</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          Content
-          <input {...content.props} />
-        </div>
-        <div>
-          Author
-          <input {...author.props} />
-        </div>
-        <div>
-          URL for more info
-          <input {...info.props} />
-        </div>
-        <button type='submit'>Create</button>
-      <button type='button' onClick={handleReset}>Reset</button>
-      </form>
+      <Form onSubmit={handleSubmit}>
+        <Form.Group className="mb-3">
+          <Form.Label>Content</Form.Label>
+          <Form.Control {...content.props} />
+        </Form.Group>
+
+        <Form.Group className="mb-3">
+          <Form.Label>Author</Form.Label>
+          <Form.Control {...author.props} />
+        </Form.Group>
+
+        <Form.Group className="mb-3">
+          <Form.Label>URL for more info</Form.Label>
+          <Form.Control {...info.props} />
+        </Form.Group>
+
+        <Button variant="primary" type="submit" className="me-2">
+          Create
+        </Button>
+        <Button variant="secondary" type="button" onClick={handleReset}>
+          Reset
+        </Button>
+      </Form>
     </div>
   )
 }
@@ -144,25 +180,30 @@ const Login = ({ onLogin }) => {
 
   return (
     <div>
-      <h2>Login</h2>
-      <form onSubmit={onSubmit}>
-        <div>
-          Username:
-          <input
+      <h2>login</h2>
+      <Form onSubmit={onSubmit}>
+        <Form.Group>
+          <Form.Label>Username:</Form.Label>
+          <Form.Control
+            type="text"
+            name="username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
+            
           />
-        </div>
-        <div>
-          Password:
-          <input
-            type='password'
+        </Form.Group>
+        <Form.Group>
+          <Form.Label>Password:</Form.Label>
+          <Form.Control
+            type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-        </div>
-        <button type='submit'>Login</button>
-      </form>
+        </Form.Group>
+        <Button variant="primary" type="submit">
+          Login
+        </Button>
+      </Form>
     </div>
   )
 }
@@ -197,6 +238,19 @@ const App = () => {
     setUser(username)
   }
 
+  const [user, setUser] = useState(null)
+  const [message, setMessage] = useState(null)
+
+  const login = (user) => {
+    setUser(user)
+    setMessage(`Welcome ${user}`)
+    setTimeout(() => {
+      setMessage(null)
+    }, 10000)
+  }
+
+  
+
 
   const notificationStyle = {
     border: '2px solid black',
@@ -213,24 +267,33 @@ const App = () => {
   }
 
 
+
+
   return (
+    <div className="container">
     <Router>
       <div>
         <h1>Software anecdotes</h1>
         <Menu />
-
+            {(message &&
+        <Alert variant="success">
+          {message}
+        </Alert>)}
         {notification && <div style={notificationStyle}>{notification}</div>}
+      
         <Routes>
           <Route path='/about' element={<About />} />
           <Route path='/create' element={<CreateNew addNew={addNew} setNotification={setNotification} />} />
           <Route path='/anecdotes/:id' element={<Anecdote anecdotes={anecdotes} />} />
           <Route path='/' element={<AnecdoteList anecdotes={anecdotes} />} />
-          <Route path='/login' element={<Login onLogin={handleLogin} />} />
+          <Route path='/login' element={<Login onLogin={login} />} />
         </Routes>
         <Footer />
       </div>
     </Router>
+    </div>
   )
 }
+
 
 export default App

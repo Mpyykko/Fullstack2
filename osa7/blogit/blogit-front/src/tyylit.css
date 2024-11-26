@@ -1,7 +1,7 @@
-body{
-  font-family: "Tilt Neon", sans-serif;
+body {
+  font-family: 'Tilt Neon', sans-serif;
 }
-.notification{
+.notification {
   color: rgb(0, 94, 128);
   background: lightgrey;
   font-size: 20px;
@@ -9,32 +9,32 @@ body{
   border-radius: 5px;
   padding: 10px;
   margin-bottom: 10px;
-} 
+}
 .error {
   color: red;
 }
-  
+
 .success {
   color: green;
 }
-.phonebook{
+.phonebook {
   margin: 0 auto;
   text-align: center;
   width: 80%;
   height: auto;
-  background-color:darkcyan;
+  background-color: darkcyan;
   padding: 50px 0px 50px 0px;
 }
-.listOfnames{
+.listOfnames {
   list-style-type: none;
   text-align: left;
   width: 350px;
 }
-.addPersonDiv{
+.addPersonDiv {
   display: flex;
   justify-content: center;
-} 
-.addPerson{
+}
+.addPerson {
   list-style-type: none;
   display: flex;
   text-align: left;
@@ -42,8 +42,8 @@ body{
   margin-top: 5px;
 }
 .addPerson input {
-    flex-grow: 1;
-    margin-left: 10px;
+  flex-grow: 1;
+  margin-left: 10px;
 }
 .deleteButtons {
   flex-grow: 1;
@@ -55,10 +55,8 @@ body{
   border: 2px solid black;
   border-radius: 5px;
 }
-  
-  
-  
-.buttons{
+
+.buttons {
   width: 50px;
   height: 25px;
   background-color: rgb(199, 199, 199);

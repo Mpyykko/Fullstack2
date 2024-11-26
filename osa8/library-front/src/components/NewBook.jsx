@@ -1,35 +1,9 @@
 import { useState } from 'react'
 import { useMutation, gql } from '@apollo/client'
+
 import 'bootstrap/dist/css/bootstrap.min.css'
 
-const ADD_BOOK = gql`
-  mutation AddBook($title: String!, $author: String!, $published: Int!, $genres: [String!]!) {
-    addBook(title: $title, author: $author, published: $published, genres: $genres) {
-      title
-      author
-      published
-      genres
-    }
-  }
-`
-const GET_BOOKS = gql`
-  query {
-    allBooks {
-      title
-      author
-      published
-    }
-  }
-`
-const GET_AUTHORS = gql`
-  query {
-    allAuthors {
-      name
-      born
-      bookCount
-    }
-  }
-`
+import { ADD_BOOK, GET_BOOKS, GET_AUTHORS} from '../queries'
 
 const NewBook = (props) => {
   const [title, setTitle] = useState('')
@@ -39,12 +13,19 @@ const NewBook = (props) => {
   const [genres, setGenres] = useState([])
 
   const [addBook] = useMutation(ADD_BOOK, {
+    context: {
+      headers: {
+        authorization: `Bearer ${localStorage.getItem('phonenumbers-user-token')}`,
+      },
+    },
     refetchQueries: [
       { query: GET_BOOKS },
       { query: GET_AUTHORS },
-    ]
+    ],
+    onError: (error) => {
+      console.error('Error adding book:', error.message)
+    },
   })
-
 
 
   if (!props.show) {
@@ -54,7 +35,21 @@ const NewBook = (props) => {
  
   const submit = async (event) => {
     event.preventDefault()
-    addBook({
+    if (!title || !author || !published || genres.length === 0) {
+      console.error('All fields are required!')
+      return
+    }
+  
+    const token = localStorage.getItem('phonenumbers-user-token')
+    if (!token) {
+      console.error('No token found!')
+      return
+    }
+  
+    console.log('Using token:', token)
+
+    try {
+      await addBook({
         variables: {
           title,
           author,
@@ -62,8 +57,12 @@ const NewBook = (props) => {
           genres,
         }
       })
+      console.log('add book...')
+    } catch (error) {
+      console.error('Error adding book:', error)
+    }
 
-    console.log('add book...')
+    
 
     setTitle('')
     setPublished('')

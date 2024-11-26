@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Select from 'react-select'
 import 'bootstrap/dist/css/bootstrap.min.css'
 
+
 const GET_AUTHORS = gql`
   query {
     allAuthors {
@@ -24,6 +25,7 @@ const EDIT_AUTHOR = gql`
 const Authors = (props) => {
     const { loading, error, data } = useQuery(GET_AUTHORS)
     const [editAuthor] = useMutation(EDIT_AUTHOR)
+    console.log(data)
 
     const [editingAuthor, setEditingAuthor] = useState(null)
     const [newBorn, setNewBorn] = useState('')
@@ -102,39 +104,43 @@ const Authors = (props) => {
             </tbody>
           </table>
           {editingAuthor && (
-            <div className="mt-4">
-              <h3>Update Birth Year</h3>
-              <form onSubmit={handleUpdate} className="form">
-                <div className="mb-3">
-                  <Select
-                    value={selectedAuthor}
-                    onChange={setSelectedAuthor}
-                    options={authorOptions}
-                    className="form-control"
-                    placeholder="Select author"
-                  />
-                </div>
-                <div className="mb-3">
-                  <input
-                    type="number"
-                    value={newBorn}
-                    onChange={({ target }) => setNewBorn(target.value)}
-                    placeholder="Enter birth year"
-                    className="form-control"
-                  />
-                </div>
-                <div>
-                  <button type="submit" className="btn btn-success">
-                    Update
-                  </button>
-                  <button type="button"   className="btn btn-secondary ms-2"
-                    onClick={handleCancel}> Cancel
-                  </button>
-                </div>
-              </form>
+        <div className="mt-4">
+          <h3>Update Birth Year</h3>
+          <form onSubmit={handleUpdate} className="form">
+            <div className="mb-3">
+              <Select
+                value={selectedAuthor}
+                onChange={setSelectedAuthor}
+                options={authorOptions}
+                className="form-control"
+                placeholder="Select author"
+              />
             </div>
-          )}
+            <div className="mb-3">
+              <input
+                type="number"
+                value={newBorn}
+                onChange={({ target }) => setNewBorn(target.value)}
+                placeholder="Enter birth year"
+                className="form-control"
+              />
+            </div>
+            <div>
+              <button type="submit" className="btn btn-success">
+                Update
+              </button>
+              <button
+                type="button"
+                className="btn btn-secondary ms-2"
+                onClick={handleCancel}
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
         </div>
+      )}
+    </div>
       )
     }
     

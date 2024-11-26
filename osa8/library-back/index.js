@@ -120,7 +120,7 @@ const typeDefs = `
     
   type Author {
     name: String!
-    bookCount: Int!
+    bookCount: Int
     born: Int
   }
 
@@ -209,11 +209,15 @@ const resolvers = {
     },
     allAuthors: async () => {
       const authors = await Author.find({})
-      return authors.map(author => ({
-        name: author.name,
-        bookCount: Book.find({ author: author._id }).length,
-        born: author.born || null,
+      const authorsWithBookCount = await Promise.all(authors.map(async (author) => {
+        const books = await Book.find({ author: author._id })
+        return {
+          name: author.name,
+          bookCount: books.length,
+          born: author.born || null,
+        }
       }))
+      return authorsWithBookCount
     },
 
       personCount: async () => Person.collection.countDocuments(),
@@ -383,6 +387,7 @@ const resolvers = {
       try {
         await newBook.save()
       } catch (error) {
+        console.error('Error saving book:', error)
         throw new GraphQLError('Saving book failed', {
           extensions: {
             code: 'BAD_USER_INPUT',

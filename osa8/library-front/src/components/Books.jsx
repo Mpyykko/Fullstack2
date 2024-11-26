@@ -1,12 +1,13 @@
 import { useQuery, gql } from '@apollo/client'
 import 'bootstrap/dist/css/bootstrap.min.css'
 
-
 const GET_BOOKS = gql`
   query {
     allBooks {
       title
-      author
+      author {
+        name
+      }
       published
     }
   }
@@ -24,28 +25,30 @@ const Books = (props) => {
 
   const books = data.allBooks
   
-    return (
-      <div className="container mt-4" >
-        <h2>Books</h2>
-  
-        <table className="table table-striped">
-          <tbody>
-            <tr>
-              <th>Title</th>
-              <th>Author</th>
-              <th>Published</th>
+  return (
+    <div className="container mt-4">
+      <h2>Books</h2>
+
+      <table className="table table-striped">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Published</th>
+          </tr>
+        </thead>
+        <tbody>
+          {books.map((a) => (
+            <tr key={a.title}>
+              <td>{a.title}</td>
+              <td>{a.author.name}</td>
+              <td>{a.published}</td>
             </tr>
-            {books.map((a) => (
-              <tr key={a.title}>
-                <td>{a.title}</td>
-                <td>{a.author}</td>
-                <td>{a.published}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    )
-  }
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
   
   export default Books

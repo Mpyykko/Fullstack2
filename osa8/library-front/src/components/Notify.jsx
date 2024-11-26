@@ -1,12 +1,14 @@
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 const Notify = ({errorMessage}) => {
-    if ( !errorMessage ) {
-      return null
-    }
-    return (
-      <div style={{color: 'red'}}>
-        {errorMessage}
-      </div>
-    )
+  if ( !errorMessage ) {
+    return null
   }
-  
-  export default Notify
+  return (
+    <div className="alert alert-danger" role="alert">
+      {errorMessage}
+    </div>
+  )
+}
+
+export default Notify

@@ -1,86 +1,79 @@
-const express = require('express')
-const bcrypt = require('bcrypt')
-const User = require('../models/user')
+const express = require('express');
+const bcrypt = require('bcrypt');
+const User = require('../models/user');
 
-const usersRouter = express.Router()
+const usersRouter = express.Router();
 
-
-/*
 // uusi käyttäjä
 usersRouter.post('/', async (req, res) => {
-  const { username, name, password } = req.body
+  const { username, name, password } = req.body;
 
   if (!password || password.length < 3) {
-    return res.status(400).json({ error: 'Password must be at least 3 characters long' })
+    return res
+      .status(400)
+      .json({ error: 'Password must be at least 3 characters long' });
   }
 
-  const saltRounds = 10
-  const passwordHash = await bcrypt.hash(password, saltRounds)
+  const saltRounds = 10;
+  const passwordHash = await bcrypt.hash(password, saltRounds);
 
   const user = new User({
     username,
     name,
-    passwordHash
-  })
+    passwordHash,
+  });
 
   try {
-    const savedUser = await user.save()
+    const savedUser = await user.save();
 
     res.status(201).json({
       username: savedUser.username,
       name: savedUser.name,
-      id: savedUser._id
-    })
+      id: savedUser._id,
+    });
   } catch (error) {
-    res.status(400).json({ error: error.message })
+    res.status(400).json({ error: error.message });
   }
-})
-
-*/
+});
 
 // hae kaikki
 usersRouter.get('/', async (request, response) => {
   try {
-    const users = await User.find({}).populate('blogs', { author: 1, likes: 1 })
-    response.json(users)
+    const users = await User.find({}).populate('blogs', { author: 1, likes: 1 });
+    const usersWithBlogCount = users.map(user => ({
+      ...user.toObject(),
+      blogCount: user.blogs.length
+    }));
+
+    response.json(usersWithBlogCount);
   } catch (error) {
-    response.status(500).json({ error: 'Server error' })
+    response.status(500).json({ error: 'Server error' });
   }
-})
+});
 
-
-// uutta käyttäjää?
-const createNewUser = async (username, name, password) => {
-  if (!password || password.length < 3) {
-    throw new Error('Password must be at least 3 characters long')
-  }
-
-  const saltRounds = 10
-  const passwordHash = await bcrypt.hash(password, saltRounds)
-
-  const user = new User({
-    username,
-    name,
-    passwordHash
-  })
-
+// Yksittäinen käyttäjä
+usersRouter.get('/:id', async (request, response) => {
   try {
-    const savedUser = await user.save()
-    return savedUser
+    const user = await User.findById(request.params.id).populate('blogs', {
+      title: 1,
+      author: 1,
+      url: 1,
+      likes: 1,
+    });
+
+    if (user) {
+      response.json({
+        username: user.username,
+        name: user.name,
+        blogs: user.blogs,
+        blogCount: user.blogs.length,
+      });
+    } else {
+      response.status(404).json({ error: 'User not found' });
+    }
   } catch (error) {
-    throw new Error(error.message)
+    response.status(500).json({ error: 'Server error' });
   }
-}
+});
 
-// Uuden käyttäjän luonti
-/*
-createNewUser('user', 'Test User', 'pass')
-  .then(user => {
-    console.log('Uusi käyttäjä luotu:', user)
-  })
-  .catch(error => {
-    console.error('Virhe luodessa käyttäjää:', error)
-  })
-*/
-
-module.exports = usersRouter
+module.exports = usersRouter;

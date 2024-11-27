@@ -4,7 +4,6 @@ const User = require('../models/user');
 const blogsRouter = express.Router();
 const jwt = require('jsonwebtoken');
 
-
 const getTokenFrom = (request) => {
   const authorization = request.get('authorization');
   if (authorization && authorization.startsWith('Bearer ')) {
@@ -108,7 +107,7 @@ blogsRouter.delete('/:id', async (request, response) => {
   }
 });
 
-// Päivitä
+// Päivitä blogit
 blogsRouter.put('/:id', async (request, response, next) => {
   const { likes } = request.body;
 
@@ -147,6 +146,26 @@ blogsRouter.get('/users', async (request, response) => {
   } catch (error) {
     console.error(error.message);
     response.status(500).json({ error: 'Virhe käyttäjien hakemisessa' });
+  }
+});
+
+// kommentit
+
+blogsRouter.post('/:id/comments', async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.id);
+    const newComment = {
+      content: req.body.content,
+      date: new Date(),
+    };
+
+    blog.comments = blog.comments.concat(newComment);
+    await blog.save();
+
+    res.status(201).json(newComment);
+  } catch (error) {
+    console.error('Kommentin lisääminen epäonnistui:', error);
+    res.status(400).json({ error: 'Kommentin lisääminen epäonnistui' });
   }
 });
 

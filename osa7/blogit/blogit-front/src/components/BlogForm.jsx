@@ -1,41 +1,44 @@
-import React, { useState } from 'react'
-import blogService from '../services/blogs'
-import 'bootstrap/dist/css/bootstrap.min.css'
+import React, { useState } from 'react';
+import blogService from '../services/blogs';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const BlogForm = ({ handleNewBlog }) => {
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
+  const [title, setTitle] = useState('');
+  const [author, setAuthor] = useState('');
+  const [url, setUrl] = useState('');
 
   const createBlog = async (event) => {
-    event.preventDefault()
-    console.log('Nykyinen token:', blogService.token)
-    
+    event.preventDefault();
+    console.log('Nykyinen token:', blogService.token);
+
     const newBlog = {
       title,
       author,
-      url
-    }
-  
+      url,
+    };
+
     try {
-      const response = await blogService.create(newBlog)
-      
-      handleNewBlog(response)
-      setTitle('')
-      setAuthor('')
-      setUrl('')
+      const response = await blogService.create(newBlog);
+
+      handleNewBlog(response);
+      setTitle('');
+      setAuthor('');
+      setUrl('');
     } catch (error) {
-      console.error('Blogin luomisvirhe:', error.response ? error.response.data : error)
-      
+      console.error(
+        'Blogin luomisvirhe:',
+        error.response ? error.response.data : error
+      );
+
       if (error.response) {
-        alert(`Virhe blogin luomisessa: ${error.response.data.error}`)
+        alert(`Virhe blogin luomisessa: ${error.response.data.error}`);
       } else {
-        alert('Blogin luomisessa tapahtui virhe')
+        alert('Blogin luomisessa tapahtui virhe');
       }
     }
-  }
+  };
   return (
-    <form onSubmit={createBlog} className="p-3 border rounded" >
+    <form onSubmit={createBlog} className="p-3 border rounded">
       <div className="mb-3">
         <label htmlFor="title" className="form-label">
           Title:
@@ -78,10 +81,14 @@ const BlogForm = ({ handleNewBlog }) => {
           placeholder="Enter blog URL"
         />
       </div>
-      <button type="submit" className="btn btn-primary w-100" style={{ maxWidth: "200px"}}>
+      <button
+        type="submit"
+        className="btn btn-primary w-100"
+        style={{ maxWidth: '150px' }}
+      >
         Create
       </button>
     </form>
-  )
-}
-export default BlogForm
+  );
+};
+export default BlogForm;

@@ -1,10 +1,14 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
-const Notification = ({ notification }) => {
+const Notification = () => {
+  const notification = useSelector((state) => state.notification);
+
   if (!notification) {
     return null;
   }
+
   const { message, type } = notification;
   const notificationStyle = {
     padding: '10px',
@@ -14,12 +18,8 @@ const Notification = ({ notification }) => {
     backgroundColor: type === 'success' ? 'lightgreen' : 'lightcoral',
     border: '1px solid black',
   };
+
   return <div style={notificationStyle}>{message}</div>;
 };
-Notification.propTypes = {
-  notification: PropTypes.shape({
-    message: PropTypes.string.isRequired,
-    type: PropTypes.oneOf(['success', 'error']).isRequired,
-  }),
-};
+
 export default Notification;

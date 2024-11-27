@@ -65,3 +65,17 @@ body {
   border-radius: 5px;
   margin-top: 5px;
 }
+
+.centered-text {
+  text-align: center;
+}
+
+.nav-link {
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+  background-color: rgb(68, 68, 195);
+  color: white;
+  text-decoration: none;
+}

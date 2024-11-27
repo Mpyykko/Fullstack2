@@ -39,10 +39,13 @@ usersRouter.post('/', async (req, res) => {
 // hae kaikki
 usersRouter.get('/', async (request, response) => {
   try {
-    const users = await User.find({}).populate('blogs', { author: 1, likes: 1 });
-    const usersWithBlogCount = users.map(user => ({
+    const users = await User.find({}).populate('blogs', {
+      author: 1,
+      likes: 1,
+    });
+    const usersWithBlogCount = users.map((user) => ({
       ...user.toObject(),
-      blogCount: user.blogs.length
+      blogCount: user.blogs.length,
     }));
 
     response.json(usersWithBlogCount);

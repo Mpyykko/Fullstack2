@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import userService from '../services/users';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-
 const Users = () => {
   const [users, setUsers] = useState([]);
 
@@ -11,7 +10,7 @@ const Users = () => {
       const usersData = await userService.getAll();
       setUsers(usersData);
     };
-    
+
     fetchUsers();
   }, []);
 

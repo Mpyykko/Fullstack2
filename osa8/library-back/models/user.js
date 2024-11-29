@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const uniqueValidator = require('mongoose-unique-validator');
+const mongoose = require('mongoose')
+const uniqueValidator = require('mongoose-unique-validator')
 
 const schema = new mongoose.Schema({
   username: {
@@ -11,13 +11,13 @@ const schema = new mongoose.Schema({
   friends: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Person',
-    },
+      ref: 'Person'
+    }
   ],
   favoriteGenre: {
-    type: String, // Vaihda ObjectId merkkijonoksi
+    type: String,
   },
-});
+})
 
-schema.plugin(uniqueValidator);
-module.exports = mongoose.model('User', schema);
+schema.plugin(uniqueValidator)
+module.exports = mongoose.model('User', schema)

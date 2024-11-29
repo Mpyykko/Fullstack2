@@ -1,63 +1,56 @@
-import { useState } from "react";
-import Authors from "./components/Authors";
-import Books from "./components/Books";
-import NewBook from "./components/NewBook";
+import { useState } from 'react';
+import Authors from './components/Authors';
+import Books from './components/Books';
+import NewBook from './components/NewBook';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Persons from './components/Persons'
-import PersonForm from './components/PersonForm'
-import PhoneForm from './components/PhoneForm'
-import Notify from './components/Notify'
-import LoginForm from './components/LoginForm'
-import { useQuery, useApolloClient } from '@apollo/client'
-
-import { ALL_PERSONS } from './queries'
-
+import Notify from './components/Notify';
+import LoginForm from './components/LoginForm';
+import { useQuery } from '@apollo/client';
+import UserFavoriteGenre from './components/FavoriteGenre';
+import { ALL_PERSONS } from './queries';
+import Subscription from './components/Subscription';
 
 const App = () => {
-  const result = useQuery(ALL_PERSONS)
-  const [errorMessage, setErrorMessage] = useState(null)
-  const [token, setToken] = useState(null)
+  const result = useQuery(ALL_PERSONS);
+  const [message, setMessage] = useState(null);
+  const [messageType, setMessageType] = useState(null);
+  const [token, setToken] = useState(null);
   const [currentView, setCurrentView] = useState('authors');
-  const client = useApolloClient()
-  
-  if (result.loading)  {
-    return <div>loading...</div>
+  const [books, setBooks] = useState([]);
+
+  if (result.loading) {
+    return <div>loading...</div>;
   }
 
-  const notify = (message) => {
-    setErrorMessage(message)
+  const notify = (message, type = 'error') => {
+    setMessage(message);
+    setMessageType(type);
     setTimeout(() => {
-      setErrorMessage(null)
-    }, 2000)
-  }
+      setMessage(null);
+      setMessageType(null);
+    }, 2000);
+  };
 
   const logout = () => {
-    setToken(null)
-    localStorage.clear()
-    client.resetStore()
-  }
+    setToken(null);
+    localStorage.clear();
+  };
 
   if (!token) {
     return (
       <div className="container mt-5">
-        <Notify errorMessage={errorMessage} />
-      
+        <Notify message={message} type={messageType} />
         <div className="card p-4 shadow-sm">
           <h2 className="mb-3 text-center">Login</h2>
           <LoginForm setToken={setToken} setError={notify} />
         </div>
       </div>
-    )
+    );
   }
 
   return (
     <div className="container mt-4">
-      <Notify errorMessage={errorMessage} />
-      {!token && (
-        <>
-          <LoginForm setToken={setToken} setError={notify} />
-        </>
-      )}
+      <Notify message={message} type={messageType} />
       {token && (
         <>
           <nav className="mb-4">
@@ -79,17 +72,25 @@ const App = () => {
             >
               New Book
             </button>
+            <button
+              className={`btn ${currentView === 'favoriteGenre' ? 'btn-primary' : 'btn-outline-primary'} me-2`}
+              onClick={() => setCurrentView('favoriteGenre')}
+            >
+              Recomendations
+            </button>
             <button className="btn btn-warning me-2" onClick={logout}>
-            Logout
-          </button>
+              Logout
+            </button>
           </nav>
           {currentView === 'authors' && <Authors show={true} />}
           {currentView === 'books' && <Books show={true} />}
-          {currentView === 'newBook' && <NewBook show={true} token={token} />}
+          {currentView === 'newBook' && <NewBook show={true} notify={notify} />}
+          {currentView === 'favoriteGenre' && <UserFavoriteGenre />}
+          <Subscription setBooks={setBooks} />
         </>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default App
+export default App;

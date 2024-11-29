@@ -1,28 +1,28 @@
-import { useState, useEffect } from 'react'
-import { useMutation } from '@apollo/client'
+import { useState, useEffect } from 'react';
+import { useMutation } from '@apollo/client';
 
-import { EDIT_NUMBER } from '../queries'
+import { EDIT_NUMBER } from '../queries';
 
 const PhoneForm = ({ setError }) => {
-  const [name, setName] = useState('')
-  const [phone, setPhone] = useState('')
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
 
-  const [ changeNumber, result ] = useMutation(EDIT_NUMBER)
+  const [changeNumber, result] = useMutation(EDIT_NUMBER);
 
   useEffect(() => {
     if (result.data && result.data.editNumber === null) {
-      setError('person not found')
+      setError('person not found');
     }
-  }, [result.data])
+  }, [result.data]);
 
   const submit = async (event) => {
-    event.preventDefault()
+    event.preventDefault();
 
-    changeNumber({ variables: { name, phone } })
+    changeNumber({ variables: { name, phone } });
 
-    setName('')
-    setPhone('')
-  }
+    setName('');
+    setPhone('');
+  };
 
   return (
     <div>
@@ -30,21 +30,23 @@ const PhoneForm = ({ setError }) => {
 
       <form onSubmit={submit}>
         <div>
-          name <input
+          name{' '}
+          <input
             value={name}
             onChange={({ target }) => setName(target.value)}
           />
         </div>
         <div>
-          phone <input
+          phone{' '}
+          <input
             value={phone}
             onChange={({ target }) => setPhone(target.value)}
           />
         </div>
-        <button type='submit'>change number</button>
+        <button type="submit">change number</button>
       </form>
     </div>
-  )
-}
+  );
+};
 
-export default PhoneForm
+export default PhoneForm;

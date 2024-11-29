@@ -1,14 +1,14 @@
 const Person = ({ person, onClose }) => {
-    return (
+  return (
+    <div>
+      <h2>{person.name}</h2>
       <div>
-        <h2>{person.name}</h2>
-        <div>
-          {person.address.street} {person.address.city}
-        </div>
-        <div>{person.phone}</div>
-        <button onClick={onClose}>close</button>
+        {person.address.street} {person.address.city}
       </div>
-    )
-  }
-  
-  export default Person
+      <div>{person.phone}</div>
+      <button onClick={onClose}>close</button>
+    </div>
+  );
+};
+
+export default Person;

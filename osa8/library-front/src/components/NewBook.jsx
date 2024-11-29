@@ -1,52 +1,42 @@
-import { useState } from 'react'
-import { useMutation, gql } from '@apollo/client'
+import { useState } from 'react';
+import { useMutation } from '@apollo/client';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { ADD_BOOK, GET_BOOKS, GET_AUTHORS } from '../queries';
 
-import 'bootstrap/dist/css/bootstrap.min.css'
-
-import { ADD_BOOK, GET_BOOKS, GET_AUTHORS} from '../queries'
-
-const NewBook = (props) => {
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [published, setPublished] = useState('')
-  const [genre, setGenre] = useState('')
-  const [genres, setGenres] = useState([])
+const NewBook = ({ show, notify }) => {
+  const [title, setTitle] = useState('');
+  const [author, setAuthor] = useState('');
+  const [published, setPublished] = useState('');
+  const [genre, setGenre] = useState('');
+  const [genres, setGenres] = useState([]);
 
   const [addBook] = useMutation(ADD_BOOK, {
-    context: {
-      headers: {
-        authorization: `Bearer ${localStorage.getItem('phonenumbers-user-token')}`,
-      },
+    refetchQueries: [{ query: GET_BOOKS }, { query: GET_AUTHORS }],
+    update(cache, { data: { addBook } }) {
+      cache.updateQuery({ query: GET_BOOKS }, (data) => {
+        if (data) {
+          return {
+            allBooks: [...data.allBooks, addBook],
+          };
+        }
+        return data;
+      });
     },
-    refetchQueries: [
-      { query: GET_BOOKS },
-      { query: GET_AUTHORS },
-    ],
     onError: (error) => {
-      console.error('Error adding book:', error.message)
+      console.error('Error adding book:', error);
+      notify('Error adding book!');
     },
-  })
+  });
 
+  if (!show) return null;
 
-  if (!props.show) {
-    return null
-  }
-
- 
   const submit = async (event) => {
-    event.preventDefault()
+    event.preventDefault();
+
     if (!title || !author || !published || genres.length === 0) {
-      console.error('All fields are required!')
-      return
+      notify('All fields are required!');
+      return;
     }
-  
-    const token = localStorage.getItem('phonenumbers-user-token')
-    if (!token) {
-      console.error('No token found!')
-      return
-    }
-  
-    console.log('Using token:', token)
 
     try {
       await addBook({
@@ -55,33 +45,35 @@ const NewBook = (props) => {
           author,
           published: parseInt(published),
           genres,
-        }
-      })
-      console.log('add book...')
+        },
+      });
+
+      setTitle('');
+      setAuthor('');
+      setPublished('');
+      setGenres([]);
+      setGenre('');
+
+      notify('Book added successfully!', 'success');
     } catch (error) {
-      console.error('Error adding book:', error)
+      console.error('Error adding book:', error);
+      notify('Error adding book!');
     }
-
-    
-
-    setTitle('')
-    setPublished('')
-    setAuthor('')
-    setGenres([])
-    setGenre('')
-  }
+  };
 
   const addGenre = () => {
-    setGenres(genres.concat(genre))
-    setGenre('')
-  }
+    if (genre && !genres.includes(genre)) {
+      setGenres([...genres, genre]);
+    }
+    setGenre('');
+  };
 
   return (
-    <div className="container mt-4" >
+    <div className="container mt-4">
       <form onSubmit={submit}>
         <div className="mb-3">
-        <label htmlFor="title" className="form-label">
-          Title
+          <label htmlFor="title" className="form-label">
+            Title
           </label>
           <input
             id="title"
@@ -91,16 +83,20 @@ const NewBook = (props) => {
           />
         </div>
         <div className="mb-3">
-          Author
+          <label htmlFor="author" className="form-label">
+            Author
+          </label>
           <input
-            value={author}
             id="author"
+            value={author}
             className="form-control"
             onChange={({ target }) => setAuthor(target.value)}
           />
         </div>
         <div className="mb-3">
-          Published
+          <label htmlFor="published" className="form-label">
+            Published
+          </label>
           <input
             type="number"
             id="published"
@@ -110,22 +106,29 @@ const NewBook = (props) => {
           />
         </div>
         <div className="d-flex">
-        <button type="button" className="btn btn-outline-primary ms-2"
+          <button
+            type="button"
+            className="btn btn-outline-primary ms-2"
             style={{ width: '100px' }}
-            onClick={addGenre}> Add genre</button>
-            <input
-              type="text"
-              id="genre"
-              className="form-control"
-              value={genre}
-              onChange={({ target }) => setGenre(target.value)}
-            />  
-          </div>
+            onClick={addGenre}
+          >
+            Add genre
+          </button>
+          <input
+            type="text"
+            id="genre"
+            className="form-control"
+            value={genre}
+            onChange={({ target }) => setGenre(target.value)}
+          />
+        </div>
         <div>Genres: {genres.join(' ')}</div>
-        <button type="submit" className="btn btn-success">Create book</button>
+        <button type="submit" className="btn btn-success">
+          Create book
+        </button>
       </form>
     </div>
-  )
-}
+  );
+};
 
-export default NewBook
+export default NewBook;

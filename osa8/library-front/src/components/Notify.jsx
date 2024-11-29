@@ -1,14 +1,17 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const Notify = ({errorMessage}) => {
-  if ( !errorMessage ) {
-    return null
+const Notify = ({ message, type }) => {
+  if (!message) {
+    return null;
   }
   return (
-    <div className="alert alert-danger" role="alert">
-      {errorMessage}
+    <div
+      className={`alert ${type === 'error' ? 'alert-danger' : 'alert-success'}`}
+      role="alert"
+    >
+      {message}
     </div>
-  )
-}
+  );
+};
 
-export default Notify
+export default Notify;

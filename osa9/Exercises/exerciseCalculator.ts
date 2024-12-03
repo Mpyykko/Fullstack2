@@ -42,8 +42,20 @@ export const calculateExercises = (dailyHours: number[], target: number): Result
 
 const args = process.argv.slice(2);
 
-const dailyHours = args[0].split(',').map(Number);
-const target = Number(args[1]);
+try {
+    if (args.length < 2) {
+        throw new Error('Not enough arguments provided');
+    }
 
-console.log(calculateExercises(dailyHours, target))
+    const dailyHours = args[0].split(',').map(Number);
+    const target = Number(args[1]);
 
+    console.log(calculateExercises(dailyHours, target));
+} catch (error) {
+    console.error('Error:', error.message);
+  
+}
+
+
+
+export default calculateExercises;

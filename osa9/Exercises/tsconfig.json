@@ -10,7 +10,6 @@
     "noImplicitThis": true,
     "alwaysStrict": true,
     "esModuleInterop": true,
-    "declaration": true,
-    "types": ["node", "express"]
+    "declaration": true
   }
 }

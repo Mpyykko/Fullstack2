@@ -9,7 +9,7 @@ const getPatients = (): Patient[] => {
 const addPatient = (patient: NewPatient): Patient => {
   const newPatient = {
     ...patient,
-    id: uuidv4() 
+    id: uuidv4(),
   };
 
   patients.push(newPatient);
@@ -18,5 +18,5 @@ const addPatient = (patient: NewPatient): Patient => {
 
 export default {
   getPatients,
-  addPatient
+  addPatient,
 };

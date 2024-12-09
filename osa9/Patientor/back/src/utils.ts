@@ -4,15 +4,26 @@ import { z } from 'zod';
 export const GenderSchema = z.enum(['male', 'female', 'other']);
 
 export const PatientSchema = z.object({
-    name: z.string().min(2, { message: 'Name must be at least 2 characters long' }),
-    dateOfBirth: z.string().refine((date) => {
+  name: z
+    .string()
+    .min(2, { message: 'Name must be at least 2 characters long' }),
+  dateOfBirth: z.string().refine(
+    (date) => {
       const parsedDate = new Date(date);
       return !isNaN(parsedDate.getTime());
-    }, { message: 'Invalid date format' }),
-    ssn: z.string().regex(/^\d{3}-\d{2}-\d{4}$/, { message: 'SSN must be in format XXX-XX-XXXX' }),
-    gender: GenderSchema,
-    occupation: z.string().min(2, { message: 'Occupation must be at least 2 characters long' }),
-  });
+    },
+    { message: 'Invalid date format' }
+  ),
+  ssn: z
+    .string()
+    .regex(/^\d{3}-\d{2}-\d{4}$/, {
+      message: 'SSN must be in format XXX-XX-XXXX',
+    }),
+  gender: GenderSchema,
+  occupation: z
+    .string()
+    .min(2, { message: 'Occupation must be at least 2 characters long' }),
+});
 
 const isString = (text: unknown): text is string => {
   return typeof text === 'string' || text instanceof String;
@@ -52,12 +63,12 @@ export const toNewPatient = (object: unknown): NewPatient => {
     throw new Error('Incorrect or missing data');
   }
 
-  const patient = object as { 
-    name: unknown, 
-    dateOfBirth: unknown, 
-    ssn: unknown, 
-    gender: unknown, 
-    occupation: unknown 
+  const patient = object as {
+    name: unknown;
+    dateOfBirth: unknown;
+    ssn: unknown;
+    gender: unknown;
+    occupation: unknown;
   };
 
   const newPatient: NewPatient = {
@@ -65,7 +76,7 @@ export const toNewPatient = (object: unknown): NewPatient => {
     dateOfBirth: parseDate(patient.dateOfBirth),
     ssn: parseString(patient.ssn, 'ssn'),
     gender: parseGender(patient.gender),
-    occupation: parseString(patient.occupation, 'occupation')
+    occupation: parseString(patient.occupation, 'occupation'),
   };
 
   return newPatient;

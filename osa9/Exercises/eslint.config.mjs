@@ -1,6 +1,6 @@
 import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
-import stylistic from "@stylistic/eslint-plugin";
+import stylistic from '@stylistic/eslint-plugin';
 
 export default tseslint.config({
   files: ['**/*.ts'],
@@ -15,7 +15,7 @@ export default tseslint.config({
     },
   },
   plugins: {
-    "@stylistic": stylistic,
+    '@stylistic': stylistic,
   },
   rules: {
     '@stylistic/semi': 'error',
@@ -25,9 +25,6 @@ export default tseslint.config({
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/restrict-template-expressions': 'off',
     '@typescript-eslint/restrict-plus-operands': 'off',
-    '@typescript-eslint/no-unused-vars': [
-      'error',
-      { 'argsIgnorePattern': '^_' }
-    ],
+    '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
   },
 });

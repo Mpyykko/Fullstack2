@@ -7,7 +7,6 @@ import patientsService from './services/patientService';
 
 import { v4 as uuidv4 } from 'uuid';
 
-
 const cors = require('cors');
 app.use(cors());
 
@@ -15,7 +14,6 @@ const PORT = 3001;
 app.get('/', (_req, res) => {
   res.send('Patientor backend');
 });
-
 
 app.get('/api/ping', (_req, res) => {
   console.log('someone pinged here');
@@ -32,11 +30,9 @@ app.get('/api/patients', (_req, res) => {
 
 app.post('/api/patients', (req, res) => {
   try {
-
-    
     const newPatient = {
       id: uuidv4(),
-      ...req.body
+      ...req.body,
     };
     const addedPatient = patientsService.addPatient(newPatient);
     res.status(201).json(addedPatient);
@@ -48,10 +44,6 @@ app.post('/api/patients', (req, res) => {
     res.status(400).json({ error: errorMessage });
   }
 });
-
-
-
-
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
